@@ -55,7 +55,7 @@ int main()
     cout<<"\nP\tAT\tBT\tCT\tTAT\tWT\n";
     for(int i=0;i<n;i++)
     {
-        cout<<"P"<<i+1<<"\t"<<AT[i]<<"\t"<<BT[i[<<"\t"<<CT[i]<<"\t"<<TAT[i]<<"\t"<<WT[i]<<endl;
+        cout<<"P"<<i+1<<"\t"<<AT[i]<<"\t"<<BT[i]<<"\t"<<CT[i]<<"\t"<<TAT[i]<<"\t"<<WT[i]<<endl;
     }
     return 0;
 }

@@ -1,72 +1,49 @@
-#include <iostream>
-#include <pthread.h>
-#include <semaphore.h>
+#include <stdio.h>      // printf aur scanf use karne ke liye library
 
-using namespace std;
-
-#define BUFFER_SIZE 5
-
-int buffer[BUFFER_SIZE];
-int in = 0, out = 0;
-
-sem_t empty, full;
-pthread_mutex_t mutex;
-
-void* producer(void* arg)
+int mutex = 1;          // mutex = lock (1 matlab buffer free hai)
+int full = 0;           // full = buffer me kitne items hai
+int empty = 3;          // empty = buffer me kitni empty space hai (buffer size = 3)
+int x = 0;              // x = item number
+// Producer function
+void producer()
 {
-    for(int i = 0; i < 10; i++)
-    {
-        sem_wait(&empty);
-        pthread_mutex_lock(&mutex);
-
-        buffer[in] = i;
-        cout << "Produced: " << i << endl;
-        in = (in + 1) % BUFFER_SIZE;
-
-        pthread_mutex_unlock(&mutex);
-        sem_post(&full);
-    }
-
-    return NULL;
+    mutex--;            // buffer lock kar diya (dusra process use nahi karega)
+    empty--;            // buffer ki empty space 1 kam ho gayi
+    full++;             // buffer me item 1 badh gaya
+    x++;                // new item produce hua
+    printf("Producer produces item %d\n", x);   // producer ne item produce kiya
+    mutex++;            // buffer unlock ho gaya
 }
-
-void* consumer(void* arg)
+// Consumer function
+void consumer()
 {
-    int item;
-
-    for(int i = 0; i < 10; i++)
-    {
-        sem_wait(&full);
-        pthread_mutex_lock(&mutex);
-
-        item = buffer[out];
-        cout << "Consumed: " << item << endl;
-        out = (out + 1) % BUFFER_SIZE;
-
-        pthread_mutex_unlock(&mutex);
-        sem_post(&empty);
-    }
-
-    return NULL;
+    mutex--;            // buffer lock kar diya
+    full--;             // buffer me item 1 kam ho gaya
+    empty++;            // empty space 1 badh gayi
+    printf("Consumer consumes item %d\n", x);   // consumer item consume kar raha hai
+    x--;                // item remove ho gaya
+    mutex++;            // buffer unlock ho gaya
 }
 
 int main()
 {
-    pthread_t p, c;
-
-    sem_init(&empty, 0, BUFFER_SIZE);
-    sem_init(&full, 0, 0);
-    pthread_mutex_init(&mutex, NULL);
-
-    pthread_create(&p, NULL, producer, NULL);
-    pthread_create(&c, NULL, consumer, NULL);
-
-    pthread_join(p, NULL);
-    pthread_join(c, NULL);
-
-    sem_destroy(&empty);
-    sem_destroy(&full);
-    pthread_mutex_destroy(&mutex);
-
-    return 0;
+    int n,i;
+    printf("Enter number of processes: ");
+    scanf("%d",&n);     // user se number of processes input
+    for(i=1;i<=n;i++)   // loop jitni baar process run karna hai
+    {
+        if(mutex==1 && empty!=0)     // agar buffer free hai aur space hai
+        {
+            producer();              // producer item produce karega
+        }
+        else if(mutex==1 && full!=0) // agar buffer free hai aur item hai
+        {
+            consumer();              // consumer item consume karega
+        }
+        else
+        {
+            printf("Buffer Full or Empty\n"); // buffer full ya empty hai
+        }
+    }
+    return 0;           // program end
 }

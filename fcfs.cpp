@@ -4,19 +4,15 @@ using namespace std;
 int main()
 {
 	int n;
-	
 	cout<<"Enter number of processes: ";
 	cin>>n;
 	
 	int AT[20], BT[20], CT[20], TAT[20], WT[20], RT[20];
-	
 	for(int i =0; i<n;i++)
 	{
 		cout<<"\nProcess "<<i+1<<"\n";
-		
 		cout<<"Arrival Time: ";
 		cin>>AT[i];
-		
 		cout<<"Burst Time: ";
 		cin>>BT[i];
 		}
